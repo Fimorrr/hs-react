@@ -1,11 +1,10 @@
 @import '_variables';
 
 .home-layout {
-  background: #ecf1f5;
   height: 100%;
 
   @media (max-width: $screenL) {
-    background: green;
+    background: #ecf1f5;
   }
 }
 

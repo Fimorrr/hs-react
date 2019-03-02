@@ -14,16 +14,23 @@ const styles = {
   title: {
     flexGrow: 1,
     color: '#5a82aa',
-    marginBottom: '20px',
     textAlign: 'center',
   },
   description: {
     color: '#1c2e40',
     textAlign: 'center',
+    marginTop: '20px',
+    marginBottom: '20px',
+  },
+  link: {
+    flexGrow: 1,
+    color: '#5a82aa',
+    textAlign: 'center',
+    textDecoration: 'underline',
   },
 };
 
-const descriptionText = 'Here you can play your 80 gold quest with other player, who have it too, and in the end, you two will have 160 gold!';
+const descriptionText = 'Here you can play your 80 gold quest with someone who also has it, as a result you both get 160 gold!';
 
 const StartPageDescription = (props) => {
   const { classes } = props;
@@ -35,6 +42,11 @@ const StartPageDescription = (props) => {
       <Typography variant="h6" className={classes.description}>
         {descriptionText}
       </Typography>
+      <a href="/howis">
+        <Typography className={classes.link}>
+          How does it work?
+        </Typography>
+      </a>
     </div>
   );
 };
