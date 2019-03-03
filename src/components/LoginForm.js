@@ -8,6 +8,7 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
 
 import TextField from '@material-ui/core/TextField';
 
@@ -19,6 +20,16 @@ const styles = {
   },
   header: {
     background: '#002242',
+  },
+  messageSuccess: {
+    width: '100%',
+    textAlign: 'center',
+    color: '#75a148',
+  },
+  messageError: {
+    width: '100%',
+    textAlign: 'center',
+    color: '#a14875',
   },
   title: {
     color: 'white',
@@ -58,9 +69,13 @@ class LoginForm extends React.Component {
       battleTag: '',
       email: '',
       password: '',
+      message: '',
+      error: false,
       registration: false,
       login: false,
       wrongBattleTag: false,
+      wrongEmail: false,
+      wrongPassword: false,
       loading: false,
     };
   }
@@ -79,12 +94,13 @@ class LoginForm extends React.Component {
       const json = await response.json();
       if (json.success) { //  Пользователь есть
         this.setState(() => ({
-          wrongBattleTag: false,
           login: true,
         }));
       } else if (json.status === 400) { //  Неправильный батлтаг
         this.setState(() => ({
           wrongBattleTag: true,
+          error: true,
+          message: 'Wrong BattleTag',
         }));
       } else { // Пользователя нет
         this.setState(() => ({
@@ -92,8 +108,55 @@ class LoginForm extends React.Component {
         }));
       }
     } catch {
-      this.setState(() => ({
-        wrongBattleTag: true,
+      this.setState(() => ({ // Не достучались до сервера
+        error: true,
+        message: 'Server error',
+      }));
+    }
+  }
+
+  registerBattleTag = async (battleTag, email, password) => {
+    try {
+      const response = await fetch('http://localhost:9000/api/v1/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: battleTag,
+          email,
+          password,
+        }),
+      });
+      const json = await response.json();
+      if (json.success) { //  Регистрация прошла успешно
+        this.setState(() => ({
+          registration: false,
+          error: false,
+          password: '',
+          message: 'Registration success',
+        }));
+      } else if (json.status === 400) { //  Неправильный формат данных
+        this.setState(() => ({
+          wrongBattleTag: true,
+        }));
+      } else if (json.status === 403) { // Такой email уже есть
+        this.setState(() => ({
+          wrongEmail: true,
+          error: true,
+          message: 'User with this email already exist',
+        }));
+      } else if (json.param === 'password') {
+        this.setState(() => ({
+          wrongPassword: true,
+          error: true,
+          message: 'Password too short',
+        }));
+      }
+    } catch {
+      this.setState(() => ({ // Не достучались до сервера
+        error: true,
+        message: 'Server error',
       }));
     }
   }
@@ -102,10 +165,23 @@ class LoginForm extends React.Component {
     this.setState(() => ({
       loading: true,
       wrongBattleTag: false,
+      wrongEmail: false,
+      wrongPassword: false,
+      message: '',
     }));
 
-    const { battleTag } = this.state;
-    await this.checkBattleTag(battleTag);
+    const {
+      registration,
+      battleTag,
+      email,
+      password,
+    } = this.state;
+
+    if (registration) {
+      await this.registerBattleTag(battleTag, email, password);
+    } else {
+      await this.checkBattleTag(battleTag);
+    }
 
     this.setState(() => ({ loading: false }));
   }
@@ -140,9 +216,13 @@ class LoginForm extends React.Component {
       battleTag,
       email,
       password,
+      message,
+      error,
       registration,
       login,
       wrongBattleTag,
+      wrongEmail,
+      wrongPassword,
       loading,
     } = this.state;
 
@@ -156,6 +236,13 @@ class LoginForm extends React.Component {
       <Card className={classes.card}>
         <CardHeader classes={{ root: classes.header, title: classes.title }} titlecolor="white" title={title} />
         <CardContent>
+          { message && (
+          <Typography
+            className={error ? classes.messageError : classes.messageSuccess}
+            variant="caption"
+          >
+            {message}
+          </Typography>) }
           <TextField
             disabled={registration || login}
             error={wrongBattleTag}
@@ -168,6 +255,7 @@ class LoginForm extends React.Component {
           { registration && (
           <TextField
             label="Email"
+            error={wrongEmail}
             value={email}
             onChange={this.changeEmail}
             className={classes.textField}
@@ -176,6 +264,7 @@ class LoginForm extends React.Component {
           { (registration || login) && (
           <TextField
             label="Password"
+            error={wrongPassword}
             value={password}
             onChange={this.changePassword}
             type="password"
