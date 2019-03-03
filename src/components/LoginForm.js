@@ -55,44 +55,73 @@ class LoginForm extends React.Component {
     super(props);
 
     this.state = {
-      label: 'BattleTag',
-      text: '',
+      battleTag: '',
+      email: '',
+      password: '',
       registration: false,
       login: false,
+      wrongBattleTag: false,
       loading: false,
-      title: 'Enter your BattleTag',
     };
   }
 
-  handleNextClick = () => {
-    this.setState(() => ({ label: 'Password' }));
-    this.setState(() => ({ battletag: 'Password' }));
-    this.setState(() => ({ registration: true }));
-    this.setState(() => ({ title: 'Registration' }));
+  checkBattleTag = async (battleTag) => {
+    try {
+      const response = await fetch('http://localhost:9000/api/v1/auth/check', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: battleTag,
+        }),
+      });
+      const json = await response.json();
+      if (json.success) { //  Пользователь есть
+        this.setState(() => ({
+          wrongBattleTag: false,
+          login: true,
+        }));
+      } else if (json.status === 400) { //  Неправильный батлтаг
+        this.setState(() => ({
+          wrongBattleTag: true,
+        }));
+      } else { // Пользователя нет
+        this.setState(() => ({
+          registration: true,
+        }));
+      }
+    } catch {
+      this.setState(() => ({
+        wrongBattleTag: true,
+      }));
+    }
+  }
 
-    this.setState(
-      {
-        loading: true,
-      },
-      () => {
-        this.timer = setTimeout(() => {
-          this.setState({
-            loading: false,
-          });
-        }, 2000);
-      },
-    );
+  handleNextClick = async () => {
+    this.setState(() => ({
+      loading: true,
+      wrongBattleTag: false,
+    }));
+
+    const { battleTag } = this.state;
+    await this.checkBattleTag(battleTag);
+
+    this.setState(() => ({ loading: false }));
   }
 
   handleBackClick = () => {
-    this.setState(() => ({ registration: false }));
-    this.setState(() => ({ title: 'Enter your BattleTag' }));
-    this.setState(() => ({ label: 'BattleTag' }));
+    this.setState(() => ({
+      registration: false,
+      login: false,
+      password: '',
+      email: '',
+    }));
   }
 
-  changeText = (event) => {
+  changeBattleTag = (event) => {
     const { value } = event.target;
-    this.setState(() => ({ text: value }));
+    this.setState(() => ({ battleTag: value }));
   }
 
   changeEmail = (event) => {
@@ -100,21 +129,42 @@ class LoginForm extends React.Component {
     this.setState(() => ({ email: value }));
   }
 
+  changePassword = (event) => {
+    const { value } = event.target;
+    this.setState(() => ({ password: value }));
+  }
+
   render() {
     const { classes } = this.props;
     const {
-      label,
-      text,
+      battleTag,
       email,
+      password,
       registration,
       login,
+      wrongBattleTag,
       loading,
-      title,
     } = this.state;
+
+    let title = 'Enter your BattleTag';
+    if (registration) {
+      title = 'Registration';
+    } else if (login) {
+      title = 'Enter yor password';
+    }
     return (
       <Card className={classes.card}>
         <CardHeader classes={{ root: classes.header, title: classes.title }} titlecolor="white" title={title} />
         <CardContent>
+          <TextField
+            disabled={registration || login}
+            error={wrongBattleTag}
+            label="BattleTag"
+            value={battleTag}
+            onChange={this.changeBattleTag}
+            className={classes.textField}
+            margin="normal"
+          />
           { registration && (
           <TextField
             label="Email"
@@ -123,13 +173,15 @@ class LoginForm extends React.Component {
             className={classes.textField}
             margin="normal"
           />) }
+          { (registration || login) && (
           <TextField
-            label={label}
-            value={text}
-            onChange={this.changeText}
+            label="Password"
+            value={password}
+            onChange={this.changePassword}
+            type="password"
             className={classes.textField}
             margin="normal"
-          />
+          />) }
         </CardContent>
         <CardActions className={classes.actions}>
           { (registration || login) && (
