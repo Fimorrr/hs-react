@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { token } from 'helpers';
+
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -9,7 +11,6 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
-
 import TextField from '@material-ui/core/TextField';
 
 const styles = {
@@ -78,6 +79,13 @@ class LoginForm extends React.Component {
       wrongPassword: false,
       loading: false,
     };
+  }
+
+  componentDidMount() {
+    const authToken = token.getToken();
+    if (authToken) {
+      console.log(authToken); //  Здесь проверка токена и редирект на следующую страницу
+    }
   }
 
   checkBattleTag = async (battleTag) => {
@@ -161,6 +169,46 @@ class LoginForm extends React.Component {
     }
   }
 
+  loginBattleTag = async (battleTag, password) => {
+    try {
+      const response = await fetch('http://localhost:9000/api/v1/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: battleTag,
+          password,
+        }),
+      });
+      const json = await response.json();
+      if (json.success) { //  Успешный вход
+        token.setToken(json.user.token);
+        this.setState(() => ({
+          login: false,
+          error: false,
+          password: '',
+          message: 'Login success',
+        }));
+      } else if (json.status === 404) { //  Такой пользователь не существует
+        this.setState(() => ({
+          wrongBattleTag: true,
+        }));
+      } else if (json.status === 401) { // Неправильный пароль
+        this.setState(() => ({
+          wrongPassword: true,
+          error: true,
+          message: 'Wrong password',
+        }));
+      }
+    } catch {
+      this.setState(() => ({ // Не достучались до сервера
+        error: true,
+        message: 'Server error',
+      }));
+    }
+  }
+
   handleNextClick = async () => {
     this.setState(() => ({
       loading: true,
@@ -172,6 +220,7 @@ class LoginForm extends React.Component {
 
     const {
       registration,
+      login,
       battleTag,
       email,
       password,
@@ -179,6 +228,8 @@ class LoginForm extends React.Component {
 
     if (registration) {
       await this.registerBattleTag(battleTag, email, password);
+    } else if (login) {
+      await this.loginBattleTag(battleTag, password);
     } else {
       await this.checkBattleTag(battleTag);
     }
@@ -230,7 +281,7 @@ class LoginForm extends React.Component {
     if (registration) {
       title = 'Registration';
     } else if (login) {
-      title = 'Enter yor password';
+      title = 'Enter your password';
     }
     return (
       <Card className={classes.card}>
