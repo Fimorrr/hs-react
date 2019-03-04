@@ -1,0 +1,14 @@
+@import '_variables';
+
+.user-layout {
+  height: 100%;
+}
+
+#user-layout-body {
+  margin-top: 3%;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+}

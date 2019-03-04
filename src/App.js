@@ -12,6 +12,7 @@ const App = () => (
   <Provider store={store}>
     <Router history={history}>
       <Switch>
+        <Route path="/user/" component={screens.UserScreen} />
         <Route path="/" component={screens.HomeScreen} />
       </Switch>
     </Router>
