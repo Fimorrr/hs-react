@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux-immutable';
 import { entitiesReducer, queriesReducer, resultsReducer } from '@digitalwing.co/redux-query-immutable';
 
+//  import userReducer from './userReducer';
+
 // import { reducer as form } from 'redux-form/immutable';
 
 export const getQueries = state => state.get('queries');
@@ -12,4 +14,5 @@ export default combineReducers({
   entities: entitiesReducer,
   queries: queriesReducer,
   results: resultsReducer,
+  //  users: userReducer,
 });

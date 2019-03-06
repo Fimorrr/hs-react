@@ -81,13 +81,6 @@ class LoginForm extends React.Component {
     };
   }
 
-  componentDidMount() {
-    const authToken = token.getToken();
-    if (authToken) {
-      console.log(authToken); //  Здесь проверка токена и редирект на следующую страницу
-    }
-  }
-
   checkBattleTag = async (battleTag) => {
     try {
       const response = await fetch('http://localhost:9000/api/v1/auth/check', {
