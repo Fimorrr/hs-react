@@ -43,6 +43,7 @@ const styles = {
     display: 'flex',
     width: '100%',
     justifyContent: 'center',
+    paddingBottom: 20,
   },
   startButton: {
     background: '#4875A1',
@@ -109,7 +110,7 @@ class StartGameCard extends React.Component {
             <Button
               className={classes.startButton}
               variant="contained"
-              size="Large"
+              size="large"
               disabled={loading}
               onClick={this.handleNextClick}
             >

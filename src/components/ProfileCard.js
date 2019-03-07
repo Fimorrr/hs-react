@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { token } from 'helpers';
-
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -60,18 +58,11 @@ class ProfileCard extends React.Component {
   constructor(props) {
     super(props);
 
+    console.log(props);
+
     this.state = {
-      message: '',
-      error: false,
       loading: false,
     };
-  }
-
-  componentDidMount() {
-    const authToken = token.getToken();
-    if (authToken) {
-      console.log(authToken); //  Здесь проверка токена и редирект на следующую страницу
-    }
   }
 
   handleNextClick = async () => {
@@ -79,10 +70,8 @@ class ProfileCard extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, user } = this.props;
     const {
-      message,
-      error,
       loading,
     } = this.state;
 
@@ -91,15 +80,17 @@ class ProfileCard extends React.Component {
     return (
       <Card className={classes.card}>
         <CardHeader classes={{ root: classes.header, title: classes.title }} titlecolor="white" title={title} />
+        { user && (
         <CardContent>
-          { message && (
-          <Typography
-            className={error ? classes.messageError : classes.messageSuccess}
-            variant="caption"
-          >
-            {message}
-          </Typography>) }
-        </CardContent>
+          <Typography>
+            BattleTag:
+            {user.name}
+          </Typography>
+          <Typography>
+            Registered:
+            {user.createdAt}
+          </Typography>
+        </CardContent>)}
         <CardActions className={classes.actions}>
           <div className={classes.wrapper}>
             <Button
@@ -119,6 +110,7 @@ class ProfileCard extends React.Component {
 
 ProfileCard.propTypes = {
   classes: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(ProfileCard);

@@ -18,7 +18,7 @@ const HomeScreen = (props) => {
     const json = await response.json();
     if (json.success) { //  Пользователь есть
       const { history } = props;
-      history.push('/user');
+      history.push('/');
     }
   };
   const authToken = token.getToken();

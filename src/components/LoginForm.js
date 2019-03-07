@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { withRouter } from 'react-router-dom';
 import { token } from 'helpers';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -183,6 +184,8 @@ class LoginForm extends React.Component {
           password: '',
           message: 'Login success',
         }));
+        const { history } = this.props;
+        history.push('/login');
       } else if (json.status === 404) { //  Такой пользователь не существует
         this.setState(() => ({
           wrongBattleTag: true,
@@ -239,6 +242,12 @@ class LoginForm extends React.Component {
     }));
   }
 
+  handleKeyPress = (target) => {
+    if (target.charCode === 13) {
+      this.handleNextClick();
+    }
+  }
+
   changeBattleTag = (event) => {
     const { value } = event.target;
     this.setState(() => ({ battleTag: value }));
@@ -288,6 +297,7 @@ class LoginForm extends React.Component {
             {message}
           </Typography>) }
           <TextField
+            onKeyPress={this.handleKeyPress}
             disabled={registration || login}
             error={wrongBattleTag}
             label="BattleTag"
@@ -298,6 +308,7 @@ class LoginForm extends React.Component {
           />
           { registration && (
           <TextField
+            onKeyPress={this.handleKeyPress}
             label="Email"
             error={wrongEmail}
             value={email}
@@ -307,6 +318,7 @@ class LoginForm extends React.Component {
           />) }
           { (registration || login) && (
           <TextField
+            onKeyPress={this.handleKeyPress}
             label="Password"
             error={wrongPassword}
             value={password}
@@ -344,4 +356,4 @@ LoginForm.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(LoginForm);
+export default withRouter(withStyles(styles)(LoginForm));

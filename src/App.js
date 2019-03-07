@@ -12,8 +12,8 @@ const App = () => (
   <Provider store={store}>
     <Router history={history}>
       <Switch>
-        <Route path="/user/" component={screens.UserScreen} />
-        <Route path="/" component={screens.HomeScreen} />
+        <Route path="/login" component={screens.HomeScreen} />
+        <Route path="/" component={screens.UserScreen} />
       </Switch>
     </Router>
   </Provider>
