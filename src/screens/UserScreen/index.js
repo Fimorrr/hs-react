@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import { withRouter } from 'react-router-dom';
 import { token } from 'helpers';
+import { endpoints } from 'api';
 
 import {
   TopMenu,
@@ -34,7 +35,7 @@ class UserScreen extends React.Component {
   }
 
   checkLogin = async (authToken) => {
-    const response = await fetch('http://localhost:9000/api/v1/users/', {
+    const response = await fetch(endpoints.getUrl('users/'), {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

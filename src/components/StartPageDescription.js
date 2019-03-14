@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { theme } from 'helpers';
+
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
@@ -13,18 +15,18 @@ const styles = {
   },
   title: {
     flexGrow: 1,
-    color: '#5a82aa',
+    color: theme.color5,
     textAlign: 'center',
   },
   description: {
-    color: '#1c2e40',
+    color: theme.color1,
     textAlign: 'center',
     marginTop: '20px',
     marginBottom: '20px',
   },
   link: {
     flexGrow: 1,
-    color: '#5a82aa',
+    color: theme.color5,
     textAlign: 'center',
     textDecoration: 'underline',
   },

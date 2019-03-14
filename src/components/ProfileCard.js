@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { theme } from 'helpers';
+
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -13,26 +15,26 @@ import Typography from '@material-ui/core/Typography';
 const styles = {
   card: {
     width: 345,
-    background: 'white',
+    background: theme.color4,
     marginBottom: 30,
     marginLeft: 30,
     marginRight: 30,
   },
   header: {
-    background: '#002242',
+    background: theme.color1,
   },
   messageSuccess: {
     width: '100%',
     textAlign: 'center',
-    color: '#75a148',
+    color: theme.color2,
   },
   messageError: {
     width: '100%',
     textAlign: 'center',
-    color: '#a14875',
+    color: theme.color3,
   },
   title: {
-    color: 'white',
+    color: theme.color4,
   },
   media: {
     height: 140,

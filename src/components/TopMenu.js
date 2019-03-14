@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { theme } from 'helpers';
+
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import AppBar from '@material-ui/core/AppBar';
@@ -9,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 
 const styles = {
   bar: {
-    background: '#002242',
+    background: theme.color1,
   },
   grow: {
     flexGrow: 1,

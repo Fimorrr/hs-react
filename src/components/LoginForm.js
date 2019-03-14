@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { withRouter } from 'react-router-dom';
-import { token } from 'helpers';
+import { token, theme } from 'helpers';
+import { endpoints } from 'api';
 
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -17,24 +18,24 @@ import TextField from '@material-ui/core/TextField';
 const styles = {
   card: {
     width: 345,
-    background: 'white',
+    background: theme.color4,
     marginBottom: 30,
   },
   header: {
-    background: '#002242',
+    background: theme.color1,
   },
   messageSuccess: {
     width: '100%',
     textAlign: 'center',
-    color: '#75a148',
+    color: theme.color2,
   },
   messageError: {
     width: '100%',
     textAlign: 'center',
-    color: '#a14875',
+    color: theme.color3,
   },
   title: {
-    color: 'white',
+    color: theme.color4,
   },
   media: {
     height: 140,
@@ -84,7 +85,7 @@ class LoginForm extends React.Component {
 
   checkBattleTag = async (battleTag) => {
     try {
-      const response = await fetch('http://localhost:9000/api/v1/auth/check', {
+      const response = await fetch(endpoints.getUrl('auth/check'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -119,7 +120,7 @@ class LoginForm extends React.Component {
 
   registerBattleTag = async (battleTag, email, password) => {
     try {
-      const response = await fetch('http://localhost:9000/api/v1/auth/register', {
+      const response = await fetch(endpoints.getUrl('auth/register'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -165,7 +166,7 @@ class LoginForm extends React.Component {
 
   loginBattleTag = async (battleTag, password) => {
     try {
-      const response = await fetch('http://localhost:9000/api/v1/auth/login', {
+      const response = await fetch(endpoints.getUrl('auth/login'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
