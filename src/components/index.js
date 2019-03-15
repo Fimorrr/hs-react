@@ -7,6 +7,7 @@ import ProfileCard from './ProfileCard';
 import StartPageDescription from './StartPageDescription';
 import GameTimer from './GameTimer';
 import LoadingButton from './LoadingButton';
+import GameDescription from './GameDescription';
 
 export {
   apiHOCs,
@@ -18,4 +19,5 @@ export {
   ProfileCard,
   GameTimer,
   LoadingButton,
+  GameDescription,
 };

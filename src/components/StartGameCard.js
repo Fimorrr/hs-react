@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { GameTimer, LoadingButton } from 'components';
+import { GameTimer, LoadingButton, GameDescription } from 'components';
 
 import { token, theme } from 'helpers';
 import { endpoints } from 'api';
@@ -33,10 +33,6 @@ const styles = {
     textAlign: 'center',
     color: theme.color3,
   },
-  text: {
-    width: '100%',
-    textAlign: 'center',
-  },
   title: {
     color: theme.color4,
   },
@@ -46,7 +42,7 @@ const styles = {
   actions: {
     display: 'flex',
     width: '100%',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
     paddingBottom: 20,
   },
 };
@@ -58,13 +54,16 @@ class StartGameCard extends React.Component {
     this.state = {
       gameStatus: -1,
       submit: false,
+      opponent: '',
       time: null,
       message: '',
       error: false,
     };
 
     this.handleFindGameClick = this.handleFindGameClick.bind(this);
+    this.handleSubmitGameClick = this.handleSubmitGameClick.bind(this);
     this.handleCancelGameClick = this.handleCancelGameClick.bind(this);
+    this.handleSuccessOptionClick = this.handleSuccessOptionClick.bind(this);
   }
 
   async componentDidMount() {
@@ -93,10 +92,11 @@ class StartGameCard extends React.Component {
     // Очищаем таймер
     clearInterval(this.interval);
     if (json.success) { //  Пользователь есть
-      const { status, submit } = json.game;
+      const { status, submit, opponent } = json.game;
       this.setState(() => ({
         gameStatus: status,
         submit,
+        opponent,
         time: json.game.time,
         message: `game status: ${json.game.status}`,
       }));
@@ -105,7 +105,6 @@ class StartGameCard extends React.Component {
         this.interval = setInterval(() => {
           this.setState(() => {
             const { time } = this.state;
-            console.log(`im alive ${time}`);
             return { time: time + 1 };
           });
         }, 1000);
@@ -117,13 +116,14 @@ class StartGameCard extends React.Component {
     }
   }
 
-  sendGameRequest = async (request, authToken) => {
+  sendGameRequest = async (request, authToken, body) => {
     const response = await fetch(endpoints.getUrl(`game/${request}`), {
-      method: 'GET',
+      method: body === undefined ? 'GET' : 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${authToken}`,
       },
+      body,
     });
     const json = await response.json();
     if (json.success) { //  Поиск игры запущен
@@ -139,8 +139,16 @@ class StartGameCard extends React.Component {
     await this.sendGameRequest('search', token.getToken());
   }
 
+  handleSubmitGameClick = async () => {
+    await this.sendGameRequest('confirm', token.getToken());
+  }
+
   handleCancelGameClick = async () => {
     await this.sendGameRequest('cancel', token.getToken());
+  }
+
+  handleSuccessOptionClick = async () => {
+    await this.sendGameRequest('complete', token.getToken(), JSON.stringify({ option: 0 }));
   }
 
   render() {
@@ -148,42 +156,13 @@ class StartGameCard extends React.Component {
     const {
       gameStatus,
       submit,
+      opponent,
       time,
       message,
       error,
     } = this.state;
 
     const title = 'Have a quest?';
-
-    let text = '';
-    switch (gameStatus) {
-      case -1:
-        text = 'Предыдущих игр нет';
-        break;
-      case 0:
-        text = 'Поиск игры';
-        break;
-      case 1:
-        if (submit) {
-          text = 'Ожидание подтверждения игры опонентом';
-        } else {
-          text = 'Подтвердите готовность';
-        }
-        break;
-      case 2:
-        if (submit) {
-          text = 'Ожидание подтверждения игры опонентом';
-        } else {
-          text = 'Отыграли игру?';
-        }
-        break;
-      case 4:
-        text = 'Игра была отменена';
-        break;
-      default:
-        text = 'Статус игры неизвестен';
-        break;
-    }
 
     return (
       <Card className={classes.card}>
@@ -196,12 +175,18 @@ class StartGameCard extends React.Component {
           >
             {message}
           </Typography>) }
-          <Typography className={classes.text}>{text}</Typography>
+          <GameDescription status={gameStatus} submit={submit} opponent={opponent} />
           <GameTimer time={time} />
         </CardContent>
         <CardActions className={classes.actions}>
-          { gameStatus !== 0 && (<LoadingButton text="Find game" type="default" action={this.handleFindGameClick} />)}
-          { gameStatus === 0 && (<LoadingButton text="Cancel game" type="cancel" action={this.handleCancelGameClick} />)}
+          { (gameStatus < 0 || gameStatus > 3) && (<LoadingButton text="Find game" type="default" action={this.handleFindGameClick} />)}
+          { (gameStatus === 0 || gameStatus === 1) && (<LoadingButton text="Cancel" type="cancel" action={this.handleCancelGameClick} />)}
+          { gameStatus === 1 && !submit && (
+            <LoadingButton text="Submit" type="confirm" action={this.handleSubmitGameClick} />
+          )}
+          { gameStatus === 2 && (
+            <LoadingButton text="Yes, I'd get my 160 gold" type="confirm" action={this.handleSuccessOptionClick} />
+          )}
         </CardActions>
       </Card>
     );

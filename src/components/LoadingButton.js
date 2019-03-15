@@ -74,9 +74,9 @@ class StartGameCard extends React.Component {
 
 StartGameCard.propTypes = {
   classes: PropTypes.object.isRequired,
-  action: PropTypes.object.isRequired,
-  text: PropTypes.object.isRequired,
-  type: PropTypes.object.isRequired,
+  action: PropTypes.func.isRequired,
+  text: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(StartGameCard);
