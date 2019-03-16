@@ -1,6 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { GameTimer, LoadingButton, GameDescription } from 'components';
+import {
+  GameTimer,
+  LoadingButton,
+  GameDescription,
+  OptionForm,
+} from 'components';
 
 import { token, theme } from 'helpers';
 import { endpoints } from 'api';
@@ -55,11 +60,13 @@ class StartGameCard extends React.Component {
       gameStatus: -1,
       submit: false,
       opponent: '',
+      value: '',
       time: null,
       message: '',
       error: false,
     };
 
+    this.handleChangeOption = this.handleChangeOption.bind(this);
     this.handleFindGameClick = this.handleFindGameClick.bind(this);
     this.handleSubmitGameClick = this.handleSubmitGameClick.bind(this);
     this.handleCancelGameClick = this.handleCancelGameClick.bind(this);
@@ -135,6 +142,11 @@ class StartGameCard extends React.Component {
     }
   }
 
+  handleChangeOption = (event) => {
+    const { value } = event.target;
+    this.setState({ value });
+  };
+
   handleFindGameClick = async () => {
     await this.sendGameRequest('search', token.getToken());
   }
@@ -148,7 +160,8 @@ class StartGameCard extends React.Component {
   }
 
   handleSuccessOptionClick = async () => {
-    await this.sendGameRequest('complete', token.getToken(), JSON.stringify({ option: 0 }));
+    const { value } = this.state;
+    await this.sendGameRequest('complete', token.getToken(), JSON.stringify({ option: parseInt(value, 10) }));
   }
 
   render() {
@@ -157,6 +170,7 @@ class StartGameCard extends React.Component {
       gameStatus,
       submit,
       opponent,
+      value,
       time,
       message,
       error,
@@ -177,6 +191,12 @@ class StartGameCard extends React.Component {
           </Typography>) }
           <GameDescription status={gameStatus} submit={submit} opponent={opponent} />
           <GameTimer time={time} />
+          <OptionForm
+            status={gameStatus}
+            submit={submit}
+            value={value}
+            change={this.handleChangeOption}
+          />
         </CardContent>
         <CardActions className={classes.actions}>
           { (gameStatus < 0 || gameStatus > 3) && (<LoadingButton text="Find game" type="default" action={this.handleFindGameClick} />)}
@@ -184,8 +204,8 @@ class StartGameCard extends React.Component {
           { gameStatus === 1 && !submit && (
             <LoadingButton text="Submit" type="confirm" action={this.handleSubmitGameClick} />
           )}
-          { gameStatus === 2 && (
-            <LoadingButton text="Yes, I'd get my 160 gold" type="confirm" action={this.handleSuccessOptionClick} />
+          { gameStatus === 2 && !submit && (
+            <LoadingButton text="Confirm" type="confirm" action={this.handleSuccessOptionClick} />
           )}
         </CardActions>
       </Card>

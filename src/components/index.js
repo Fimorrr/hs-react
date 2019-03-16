@@ -8,6 +8,7 @@ import StartPageDescription from './StartPageDescription';
 import GameTimer from './GameTimer';
 import LoadingButton from './LoadingButton';
 import GameDescription from './GameDescription';
+import OptionForm from './OptionForm';
 
 export {
   apiHOCs,
@@ -20,4 +21,5 @@ export {
   GameTimer,
   LoadingButton,
   GameDescription,
+  OptionForm,
 };

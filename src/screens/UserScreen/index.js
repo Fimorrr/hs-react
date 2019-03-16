@@ -59,7 +59,7 @@ class UserScreen extends React.Component {
 
     return (
       <div className="user-layout">
-        <TopMenu />
+        <TopMenu login={login} />
         {login && (
           <div id="user-layout-body">
             <StartGameCard />
