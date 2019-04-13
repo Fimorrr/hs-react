@@ -9,6 +9,7 @@ import GameTimer from './GameTimer';
 import LoadingButton from './LoadingButton';
 import GameDescription from './GameDescription';
 import OptionForm from './OptionForm';
+import DisputeForm from './DisputeForm';
 
 export {
   apiHOCs,
@@ -22,4 +23,5 @@ export {
   LoadingButton,
   GameDescription,
   OptionForm,
+  DisputeForm,
 };

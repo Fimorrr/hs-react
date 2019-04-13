@@ -5,6 +5,7 @@ import {
   LoadingButton,
   GameDescription,
   OptionForm,
+  DisputeForm,
 } from 'components';
 
 import { token, theme } from 'helpers';
@@ -99,11 +100,17 @@ class StartGameCard extends React.Component {
     // Очищаем таймер
     clearInterval(this.interval);
     if (json.success) { //  Пользователь есть
-      const { status, submit, opponent } = json.game;
+      const {
+        status,
+        submit,
+        opponent,
+        images,
+      } = json.game;
       this.setState(() => ({
         gameStatus: status,
         submit,
         opponent,
+        images,
         time: json.game.time,
         message: `game status: ${json.game.status}`,
       }));
@@ -174,6 +181,7 @@ class StartGameCard extends React.Component {
       time,
       message,
       error,
+      images,
     } = this.state;
 
     const title = 'Have a quest?';
@@ -197,6 +205,7 @@ class StartGameCard extends React.Component {
             value={value}
             change={this.handleChangeOption}
           />
+          { images > 0 && <DisputeForm images={images} /> }
         </CardContent>
         <CardActions className={classes.actions}>
           { (gameStatus < 0 || gameStatus > 3) && (<LoadingButton text="Find game" type="default" action={this.handleFindGameClick} />)}
